@@ -11,4 +11,5 @@ wget -N https://hydra.iohk.io/build/${NODE_BUILD_NUM}/download/1/${NODE_CONFIG}-
 sed -i ${NODE_CONFIG}-config.json \
     -e "s/TraceBlockFetchDecisions\": false/TraceBlockFetchDecisions\": true/g"
 
+echo export CARDANO_NODE_SOCKET_PATH="$NODE_HOME/db/socket" >> "$HOME/.bashrc"
 source "$HOME/.bashrc"
