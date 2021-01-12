@@ -31,14 +31,17 @@ echo "poolDeposit: $poolDeposit"
 # Registration of a stake address certificate (keyDeposit) costs 2000000 lovelace.
 # The invalid-hereafter value must be greater than the current tip. In this example, we use current slot + 10000.
 
+POOL_CERT="$NODE_HOME/pool.cert"
+DELEG_CERT="$NODE_HOME/deleg.cert"
+
 echo "=== Run build-raw transaction cmd ==="
 cardano-cli transaction build-raw \
     ${tx_in} \
     --tx-out $(cat "$paymentAddrFile")+$(( ${total_balance} - ${poolDeposit})) \
     --invalid-hereafter $((${currentSlot} + 10000)) \
     --fee 0 \
-    --certificate-file pool.cert \
-    --certificate-file deleg.cert \
+    --certificate-file $POOL_CERT \
+    --certificate-file $DELEG_CERT \
     --allegra-era \
     --out-file tx.tmp
 
@@ -63,8 +66,8 @@ cardano-cli transaction build-raw \
     --tx-out $(cat "$paymentAddrFile")+${txOut} \
     --invalid-hereafter $(( ${currentSlot} + 10000)) \
     --fee ${fee} \
-    --certificate-file pool.cert \
-    --certificate-file deleg.cert \
+    --certificate-file $POOL_CERT \
+    --certificate-file $DELEG_CERT \
     --allegra-era \
     --out-file tx.raw
 echo "=== Created transaction ==="
