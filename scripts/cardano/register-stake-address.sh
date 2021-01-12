@@ -59,9 +59,11 @@ cardano-cli transaction build-raw \
     ${tx_in} \
     --tx-out $(cat "$paymentAddrFile")+${txOut} \
     --invalid-hereafter $(( ${currentSlot} + 10000)) \
-    --fee ${fee}
+    --fee ${fee} \
     --certificate-file "$NODE_HOME/stake.cert" \
     --allegra-era \
-    --out.file tx.raw
+    --out-file tx.raw
 echo "=== Created transaction ==="
 cat tx.raw 
+
+rm fullUtxo.out balance.out tx.tmp
