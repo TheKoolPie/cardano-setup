@@ -31,7 +31,7 @@ echo "keyDeposit: $keyDeposit"
 # The invalid-hereafter value must be greater than the current tip. In this example, we use current slot + 10000.
 
 echo "Run build-raw transaction cmd"
-cardano-cli transaction buil-raw \
+cardano-cli transaction build-raw \
     ${tx_in} \
     --tx-out $(cat "$paymentAddrFile") \
     --invalid-hereafter $((${currentSlot} + 10000)) \
