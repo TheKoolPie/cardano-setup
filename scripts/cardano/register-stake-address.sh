@@ -1,7 +1,8 @@
-currentSlot = $(cardano-cli query tip --mainnet | jq -r '.slotNo')
+#!/bin/bash
+currentSlot=$(cardano-cli query tip --mainnet | jq -r '.slotNo')
 echo "Current Slot: $currentSlot"
 
-paymentAddrFile = "$NODE_HOME/payment.addr"
+paymentAddrFile="$NODE_HOME/payment.addr"
 
 echo "Find balance"
 cardano-cli query utxo --address $(cat "$paymentAddrFile") --allegra-era --mainnet >>fullUtxo.out
@@ -18,7 +19,7 @@ while read -r utxo; do
     echo TxHash: ${in_addr} #${idx}
     echo ADA: ${utxo_balance}
     tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
-done <balance.out
+done < balance.out
 txcnt=$(cat balance.out | wc -l)
 echo Total ADA balance: ${total_balance}
 echo Number of UTXOs: ${txcnt}
@@ -40,7 +41,7 @@ cardano-cli transaction buil-raw \
     --certificate "$NODE_HOME/stake.cert"
 
 echo "Calculate current minimum fee"
-fee = $(cardano-cli transaction calculate-min-fee \
+fee=$(cardano-cli transaction calculate-min-fee \
     --tx-body-file tx.tmp \
     --tx-in-count ${txcnt} \
     --tx-out-count 1 \
@@ -50,5 +51,5 @@ fee = $(cardano-cli transaction calculate-min-fee \
     --protocol-params-file "$NODE_HOME/params.json" | awk '{ print $1 }')
 echo fee: $fee
 echo "Calculate change output"
-txOut = $((${total_balance} - ${keyDeposit} - ${fee}))
+txOut=$((${total_balance} - ${keyDeposit} - ${fee}))
 echo Change Output: ${txOut}
