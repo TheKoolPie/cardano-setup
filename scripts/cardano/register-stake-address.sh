@@ -4,10 +4,9 @@ echo "Current Slot: $currentSlot"
 
 paymentAddrFile="$NODE_HOME/payment.addr"
 
-echo "Find balance"
+echo "=== Find balance ==="
 cardano-cli query utxo --address $(cat "$paymentAddrFile") --allegra-era --mainnet >>fullUtxo.out
 tail -n +3 fullUtxo.out | sort -k3 -nr >balance.out
-cat balance.out
 
 tx_in=""
 total_balance=0
@@ -15,7 +14,7 @@ while read -r utxo; do
     in_addr=$(awk '{ print $1 }' <<<"${utxo}")
     idx=$(awk '{ print $2 }' <<<"${utxo}")
     utxo_balance=$(awk '{ print $3 }' <<<"${utxo}")
-    total_balance=$((${total_balance}+${utxo_balance}))
+    total_balance=$((total_balance+utxo_balance))
     echo TxHash: ${in_addr}#${idx}
     echo ADA: ${utxo_balance}
     tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
@@ -30,17 +29,17 @@ echo "keyDeposit: $keyDeposit"
 # Registration of a stake address certificate (keyDeposit) costs 2000000 lovelace.
 # The invalid-hereafter value must be greater than the current tip. In this example, we use current slot + 10000.
 
-echo "Run build-raw transaction cmd"
+echo "=== Run build-raw transaction cmd ==="
 cardano-cli transaction build-raw \
     ${tx_in} \
-    --tx-out $(cat "$paymentAddrFile") \
+    --tx-out $(cat "$paymentAddrFile")+0 \
     --invalid-hereafter $((${currentSlot} + 10000)) \
     --fee 0 \
     --out-file tx.tmp \
     --allegra-era \
     --certificate "$NODE_HOME/stake.cert"
 
-echo "Calculate current minimum fee"
+echo "===Calculate current minimum fee ==="
 fee=$(cardano-cli transaction calculate-min-fee \
     --tx-body-file tx.tmp \
     --tx-in-count ${txcnt} \
@@ -49,7 +48,20 @@ fee=$(cardano-cli transaction calculate-min-fee \
     --witness-count 2 \
     --byron-witness-count 0 \
     --protocol-params-file "$NODE_HOME/params.json" | awk '{ print $1 }')
-echo fee: $fee
-echo "Calculate change output"
+echo "Calculated Fee: $fee"
+
+echo "=== Calculate change output ==="
 txOut=$((${total_balance} - ${keyDeposit} - ${fee}))
-echo Change Output: ${txOut}
+echo "Change Output: ${txOut} "
+
+echo "=== Build transaction for stake address register ==="
+cardano-cli transaction build-raw \
+    ${tx_in} \
+    --tx-out $(cat "$paymentAddrFile")+${txOut} \
+    --invalid-hereafter $(( ${currentSlot} + 10000)) \
+    --fee ${fee}
+    --certificate-file "$NODE_HOME/stake.cert" \
+    --allegra-era \
+    --out.file tx.raw
+echo "=== Created transaction ==="
+cat tx.raw 
