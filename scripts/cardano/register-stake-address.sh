@@ -15,8 +15,8 @@ while read -r utxo; do
     in_addr=$(awk '{ print $1 }' <<<"${utxo}")
     idx=$(awk '{ print $2 }' <<<"${utxo}")
     utxo_balance=$(awk '{ print $3 }' <<<"${utxo}")
-    total_balance=$((${total_balance} + ${utxo_balance}))
-    echo TxHash: ${in_addr} #${idx}
+    total_balance=$((${total_balance}+${utxo_balance}))
+    echo TxHash: ${in_addr}#${idx}
     echo ADA: ${utxo_balance}
     tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
 done < balance.out
