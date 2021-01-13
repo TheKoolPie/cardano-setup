@@ -95,7 +95,7 @@
                     </p>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <a class="btn btn-outline-secondary items-align-center" href="#">
+                            <button class="btn btn-outline-secondary items-align-center" onclick="copyPoolIdToClipboard()">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
@@ -111,9 +111,9 @@
                                         d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
                                     />
                                 </svg>
-                            </a>
+                            </button>
                         </div>
-                        <input type="text" disabled value="599597342dcd3f6d188746698e1ee38c0523daaab650332a06fbab34" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                        <input id="pool-id-input" type="text" readonly value="599597342dcd3f6d188746698e1ee38c0523daaab650332a06fbab34" class="form-control">
                       </div>
                 </div>
             </div>
@@ -216,5 +216,6 @@
                 </div>
             </div>
         </main>
+        <script src="./js/site.js"></script>
     </body>
 </html>
