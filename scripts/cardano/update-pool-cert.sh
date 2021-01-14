@@ -23,8 +23,6 @@ cardano-cli query utxo \
 
 tail -n +3 "$FULL_UTXO_OUT" | sort -k3 -nr > "$BALANCE_OUT"
 
-cat balance.out
-
 tx_in=""
 total_balance=0
 while read -r utxo; do
