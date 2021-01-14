@@ -45,8 +45,8 @@ cardano-cli transaction build-raw \
     --tx-out $PAYMENT_ADDR+${total_balance} \
     --invalid-hereafter $(( ${currentSlot} + 10000)) \
     --fee 0 \
-    --certificate-file pool.cert \
-    --certificate-file deleg.cert \
+    --certificate-file "$POOL_CERT" \
+    --certificate-file "$DELEG_CERT" \
     --allegra-era \
     --out-file "$TX_TMP"
 
