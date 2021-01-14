@@ -1,9 +1,11 @@
-
 WORKDIR="$HOME/work"
-[!d $WORKDIR ] && mkdir $WORKDIR
-rm "$WORKDIR/*"
+[! -d $WORKDIR ] && mkdir $WORKDIR
 
-PAYMENT_ADDR=$(cat "$HOME/cardano-my-node/payment.addr")
+POOL_CERT="$NODE_HOME/pool.cert"
+DELEG_CERT="$NODE_HOME/deleg.cert"
+PARAMS="$NODE_HOME/params.json"
+
+PAYMENT_ADDR=$(cat "$NODE_HOME/payment.addr")
 BALANCE_OUT="$WORKDIR/balance.out"
 FULL_UTXO_OUT="$WORKDIR/fullUtxo.out"
 TX_TMP="$WORKDIR/tx.tmp"
@@ -17,9 +19,9 @@ echo "Find balance"
 cardano-cli query utxo \
     --address $PAYMENT_ADDR \
     --allegra-era \
-    --mainnet > $FULL_UTXO_OUT
+    --mainnet > "$FULL_UTXO_OUT"
 
-tail -n +3 $FULL_UTXO_OUT | sort -k3 -nr > $BALANCE_OUT
+tail -n +3 "$FULL_UTXO_OUT" | sort -k3 -nr > "$BALANCE_OUT"
 
 cat balance.out
 
@@ -30,11 +32,9 @@ while read -r utxo; do
     idx=$(awk '{ print $2 }' <<< "${utxo}")
     utxo_balance=$(awk '{ print $3 }' <<< "${utxo}")
     total_balance=$((${total_balance}+${utxo_balance}))
-    echo TxHash: ${in_addr}#${idx}
-    echo ADA: ${utxo_balance}
     tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
-done < $BALANCE_OUT
-txcnt=$(cat $BALANCE_OUT | wc -l)
+done < "$BALANCE_OUT"
+txcnt=$(cat "$BALANCE_OUT" | wc -l)
 echo Total ADA balance: ${total_balance}
 echo Number of UTXOs: ${txcnt}
 
@@ -48,18 +48,18 @@ cardano-cli transaction build-raw \
     --certificate-file pool.cert \
     --certificate-file deleg.cert \
     --allegra-era \
-    --out-file $TX_TMP
+    --out-file "$TX_TMP"
 
 echo "====================="
 echo "Calculate minimum fee"
 fee=$(cardano-cli transaction calculate-min-fee \
-    --tx-body-file ${TX_TMP} \
+    --tx-body-file "$TX_TMP" \
     --tx-in-count ${txcnt} \
     --tx-out-count 1 \
     --mainnet \
     --witness-count 3 \
     --byron-witness-count 0 \
-    --protocol-params-file params.json | awk '{ print $1 }')
+    --protocol-params-file "$PARAMS" | awk '{ print $1 }')
 echo fee: $fee
 
 echo "====================="
@@ -73,15 +73,16 @@ cardano-cli transaction build-raw \
     --tx-out $PAYMENT_ADDR+${txOut} \
     --invalid-hereafter $(( ${currentSlot} + 10000)) \
     --fee ${fee} \
-    --certificate-file pool.cert \
-    --certificate-file deleg.cert \
+    --certificate-file "$POOL_CERT" \
+    --certificate-file "$DELEG_CERT" \
     --allegra-era \
-    --out-file $TX_RAW
+    --out-file "$TX_RAW"
 
 echo "====================="
 echo "Delete unneeded files"
-rm $BALANCE_OUT
-rm $FULL_UTXO_OUT
-rm $TX_TMP
+[ -f $BALANCE_OUT ] && rm $BALANCE_OUT
+[ -f $FULL_UTXO_OUT ] && rm $FULL_UTXO_OUT
+[ -f $TX_TMP ] && rm $TX_TMP
+
 echo "====================="
 echo "Copy '$TX_RAW' to cold environment to sign the transaction"
