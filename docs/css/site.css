@@ -1,64 +1,69 @@
 .container {
     max-width: 960px;
-  }
-  
-  /*
+}
+
+/*
    * Custom translucent site header
    */
-  
-  .site-header {
-    background-color: #3B82F6;
+
+.site-header {
+    background-color: #3b82f6;
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     backdrop-filter: saturate(180%) blur(20px);
-  }
-  .site-header a {
-    color: #8e8e8e;
-    transition: color .15s ease-in-out;
-  }
-  .site-header a:hover {
+}
+.site-header a {
     color: #fff;
+    transition: color 0.15s ease-in-out;
+}
+.site-header a:hover {
+    color: #8e8e8e;
     text-decoration: none;
-  }
+}
 
-  html{
-      scroll-behavior: smooth;
-  }
-
+html {
+    scroll-behavior: smooth;
+}
 .icon-wrapper {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
-  .fab, .fas {
-    width: 52px;
-    height: 52px;
-    font-size: 36px;
+
+.icon-wrapper > a {
+    width: 64px;
+    height: 64px;
     cursor: pointer;
-    text-decoration: none;
-    display: inline;
-  }
-  
-  .btn:hover {
+    padding: 12px 0px 0px 0px;
+}
+.icon-wrapper > a > i {
+  font-size: 30pt;
+}
+.btn:hover {
     opacity: 0.7;
-  } 
-
-.btn-discord{
-  background: #8C9EFF;
-}
-.btn-twitter{
-  background: #55ACEE;
 }
 
-.btn-envelope{
-  background: orange;
+.btn-discord {
+    background: #8c9eff;
 }
-  .fa-discord {
-    color:white;
+.btn-twitter {
+    background: #55acee;
+}
 
-  }
-  .fa-twitter {
+.btn-envelope {
+    background: orange;
+}
+.btn-telegram {
+    background: #26a5e4;
+}
 
+.fa-discord {
     color: white;
-  }
-  .fa-envelope{
+}
+.fa-twitter {
     color: white;
-  }
+}
+.fa-envelope {
+    color: white;
+}
+.fa-telegram {
+    color: white;
+}
